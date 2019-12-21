@@ -3,6 +3,8 @@ import {transform2d} from "./components/com_transform2d.js";
 import {Rad, Vec2} from "./math/index.js";
 import {sys_collide} from "./systems/sys_collide.js";
 import {sys_control_paddle} from "./systems/sys_control_paddle.js";
+import {sys_control_ball} from "./systems/sys_control_ball.js";
+import {sys_move} from "./systems/sys_move.js";
 import {sys_draw2d} from "./systems/sys_draw2d.js";
 import {sys_framerate} from "./systems/sys_framerate.js";
 import {sys_performance} from "./systems/sys_performance.js";
@@ -29,7 +31,12 @@ export class Game {
             document.hidden ? this.Stop() : this.Start()
         );
 
-        window.addEventListener("keydown", evt => (this.InputState[evt.code] = 1));
+        window.addEventListener("keydown", evt => {
+                this.InputState[evt.code] = 1
+                this.InputEvent[`${evt.code}_down`] = 1;
+                console.log(this.InputEvent)
+            }
+        );
         window.addEventListener("keyup", evt => (this.InputState[evt.code] = 0));
         this.UI.addEventListener("contextmenu", evt => evt.preventDefault());
         this.UI.addEventListener("mousedown", evt => {
@@ -70,6 +77,8 @@ export class Game {
         let now = performance.now();
 
         sys_control_paddle(this, delta);
+        sys_control_ball(this, delta);
+        sys_move(this, delta);
         sys_transform2d(this, delta);
         sys_collide(this, delta);
         sys_draw2d(this, delta);

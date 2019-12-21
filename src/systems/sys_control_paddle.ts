@@ -1,6 +1,8 @@
 import {Has} from "../components/com_index.js";
 import {Entity, Game} from "../game.js";
 import {Vec2} from "../math/index.js";
+import {Direction, Move} from '../const/move.js';
+import {add, normalize} from '../math/vec2.js';
 
 const QUERY = Has.Transform2D | Has.ControlPaddle;
 
@@ -14,10 +16,25 @@ export function sys_control_paddle(game: Game, delta: number) {
 
 function update(game: Game, entity: Entity, delta: number) {
     let direction = <Vec2>[0, 0];
-    let speed = 300;
 
-    let transform = game.World.Transform2D[entity];
-    transform.Translation[0] += direction[0] * speed * delta;
-    transform.Translation[1] += direction[1] * speed * delta;
-    transform.Dirty = true;
+    const {ArrowRight: isRight, ArrowLeft: isLeft, ArrowUp: isUp, ArrowDown: isDown} = game.InputState;
+
+
+
+    if(isUp){
+        add(direction, direction, Move[Direction.Down]);
+    }
+    if(isDown){
+        add(direction, direction, Move[Direction.Up]);
+    }
+    if(isLeft){
+        add(direction, direction, Move[Direction.Left]);
+    }
+    if(isRight){
+        add(direction, direction, Move[Direction.Right]);
+    }
+
+    let move = game.World.Move[entity];
+    move.Vector[0] = direction[0];
+    move.Vector[1] = direction[1];
 }

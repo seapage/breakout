@@ -26,9 +26,36 @@ export function sys_collide(game: Game, delta: number) {
     }
 }
 
-function compute_aabb(transform: Transform2D, collide: Collide) {}
+export function compute_aabb(transform: Transform2D, collide: Collide) {
+    const position = transform.Translation;
+    const [sizeX, sizeY] = collide.Size;
 
-function check_collisions(collider: Collide, colliders: Collide[]) {}
+    collide.Center = <Vec2>[
+        position[0],
+        position[1]
+    ];
+
+    collide.Max = <Vec2>[
+        position[0]+sizeX/2,
+        position[1]+sizeY/2
+    ];
+
+    collide.Min = <Vec2>[
+        position[0]-sizeX/2,
+        position[1]-sizeY/2
+    ];
+}
+
+function check_collisions(collider: Collide, colliders: Collide[]) {
+    colliders.forEach((compareCollider, index)=>{
+        if(intersect_aabb(compareCollider,collider) && collider.EntityId !== compareCollider.EntityId){
+            collider.Collisions.push({
+                Other: compareCollider,
+                Hit: penetrate_aabb(collider, compareCollider)
+            })
+        }
+    })
+}
 
 function penetrate_aabb(a: Collide, b: Collide) {
     let distance_x = a.Center[0] - b.Center[0];

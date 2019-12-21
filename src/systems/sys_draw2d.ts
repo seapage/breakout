@@ -25,8 +25,40 @@ export function sys_draw2d(game: Game, delta: number) {
     }
 }
 
-function draw_rect(game: Game, entity: Entity) {
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
+function draw_rect(game: Game, entity: Entity, random?: Boolean) {
     let draw = game.World.Draw[entity];
-    game.Context2D.fillStyle = "red";
-    game.Context2D.fillRect(-draw.Size / 2, -draw.Size / 2, draw.Size, draw.Size);
+
+
+    const {Space: isSpace} = game.InputState;
+
+
+    const image = new Image();
+    let pat;
+    switch(draw.Color){
+        case 'wokay':
+            const size = draw.Height;
+            image.src = `./images/${size}x${size}.png`;
+            pat = game.Context2D.createPattern(image, "repeat");
+            game.Context2D.fillStyle = pat;
+            game.Context2D.fillRect(-size / 2 - size/2, -size / 2- size/2, size, size);
+            break;
+        default: 
+
+            game.Context2D.fillStyle = (random || isSpace) ? getRandomColor(): draw.Color;
+            game.Context2D.fillRect(-draw.Height / 2, -draw.Width / 2, draw.Height, draw.Width);
+    }
+
+
+
+
 }
+
